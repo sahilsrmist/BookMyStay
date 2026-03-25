@@ -1,23 +1,21 @@
 import java.util.*;
 
-
 /**
  * ====================================================================
- * MAIN CLASS - UseCase3InventorySetup
+ * MAIN CLASS - UseCase4RoomSearch
  * ====================================================================
  *
- * Use Case 3: Centralized Room Inventory Management
+ * Use Case 4: Room Search & Availability Check
  *
  * Description:
- * This class demonstrates how room availability
- * is managed using a centralized inventory.
+ * This class demonstrates how guests
+ * can view available rooms without
+ * modifying inventory data.
  *
- * Room objects are used to retrieve pricing
- * and room characteristics.
+ * The system enforces read-only access
+ * by design and usage discipline.
  *
- * No booking or search logic is introduced here.
- *
- * @version 3.1
+ * @version 4.0
  */
 public class BookMyStay {
     /**
@@ -26,30 +24,20 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hotel Room Inventory Status\n");
+        System.out.println("Room Search\n");
 
-        // Initialize domain objects (from UC2)
+        // 1. Initialize domain objects (from UC2)
         Room singleRoom = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
         Room suiteRoom = new SuiteRoom();
 
-        // Initialize centralized inventory (UC3)
+        // 2. Initialize centralized inventory (from UC3)
         RoomInventory inventory = new RoomInventory();
-        Map<String, Integer> availability = inventory.getRoomAvailability();
 
-        // Display Single Room
-        System.out.println("Single Room:");
-        singleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Single") + "\n");
+        // 3. Initialize the Search Service (UC4)
+        RoomSearchService searchService = new RoomSearchService();
 
-        // Display Double Room
-        System.out.println("Double Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Double") + "\n");
-
-        // Display Suite Room
-        System.out.println("Suite Room:");
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + availability.get("Suite"));
+        // 4. Perform the read-only search operation
+        searchService.searchAvailableRooms(inventory, singleRoom, doubleRoom, suiteRoom);
     }
 }
