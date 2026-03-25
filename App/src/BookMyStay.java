@@ -1,20 +1,20 @@
 import java.util.*;
 /**
  * ====================================================================
- * MAIN CLASS - UseCase6RoomAllocation
+ * MAIN CLASS - UseCase7AddOnServiceSelection
  * ====================================================================
  *
- * Use Case 6: Reservation Confirmation & Room Allocation
+ * Use Case 7: Add-On Service Selection
  *
  * Description:
- * This class demonstrates how booking
- * requests are confirmed and rooms
- * are allocated safely.
+ * This class demonstrates how optional
+ * services can be attached to a confirmed
+ * booking.
  *
- * It consumes booking requests in FIFO
- * order and updates inventory immediately.
+ * Services are added after room allocation
+ * and do not affect inventory.
  *
- * @version 6.0
+ * @version 7.0
  */
 public class BookMyStay {
     /**
@@ -23,33 +23,26 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Room Allocation Processing\n");
+        System.out.println("Add-On Service Selection\n");
 
-        // 1. Initialize System State (Inventory & Allocation Service)
-        RoomInventory inventory = new RoomInventory();
-        RoomAllocationService allocationService = new RoomAllocationService();
+        // 1. Initialize the Service Manager
+        AddOnServiceManager serviceManager = new AddOnServiceManager();
 
-        // 2. Initialize Queue and simulate incoming requests
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        // 2. Define available Add-On Services
+        AddOnService breakfast = new AddOnService("Breakfast Buffet", 500.0);
+        AddOnService spa = new AddOnService("Spa Treatment", 1500.0);
+        AddOnService airportPickup = new AddOnService("Airport Pickup", 1000.0);
 
-        // Note: Based on the screenshot output, Subha changed from Double to Single
-        Reservation r1 = new Reservation("Abhi", "Single");
-        Reservation r2 = new Reservation("Subha", "Single");
-        Reservation r3 = new Reservation("Vanmathi", "Suite");
+        // 3. Simulate a confirmed reservation ID (e.g., from UC6)
+        String reservationId = "Single-1"; // Assume this was assigned to "Abhi" in UC6
 
-        bookingQueue.addRequest(r1);
-        bookingQueue.addRequest(r2);
-        bookingQueue.addRequest(r3);
+        // 4. Attach services to the reservation
+        System.out.println("Attaching services to " + reservationId + ":");
+        serviceManager.addService(reservationId, breakfast);
+        serviceManager.addService(reservationId, airportPickup);
 
-        // 3. Process the queue (FIFO) and allocate rooms safely
-        while (bookingQueue.hasPendingRequests()) {
-            Reservation currentRequest = bookingQueue.getNextRequest();
-
-            // Atomic logical operation: Allocate and update inventory together
-            allocationService.allocateRoom(currentRequest, inventory);
-        }
-
-        // Optional: Prove the inventory was decremented
-        // System.out.println("\nRemaining Single Rooms: " + inventory.getRoomAvailability().get("Single"));
+        // 5. Calculate and display the total cost of add-ons
+        double totalAddOnCost = serviceManager.calculateTotalServiceCost(reservationId);
+        System.out.println("\nTotal Add-On Cost for " + reservationId + ": " + totalAddOnCost);
     }
 }
