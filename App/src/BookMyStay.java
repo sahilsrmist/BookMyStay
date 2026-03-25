@@ -1,21 +1,20 @@
 import java.util.*;
-
 /**
  * ====================================================================
- * MAIN CLASS - UseCase4RoomSearch
+ * MAIN CLASS - UseCase5BookingRequestQueue
  * ====================================================================
  *
- * Use Case 4: Room Search & Availability Check
+ * Use Case 5: Booking Request (First-Come-First-Served)
  *
  * Description:
- * This class demonstrates how guests
- * can view available rooms without
- * modifying inventory data.
+ * This class demonstrates how booking
+ * requests are accepted and queued
+ * in a fair and predictable order.
  *
- * The system enforces read-only access
- * by design and usage discipline.
+ * No room allocation or inventory
+ * update is performed here.
  *
- * @version 4.0
+ * @version 5.0
  */
 public class BookMyStay {
     /**
@@ -24,20 +23,27 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Room Search\n");
+        // Display application header
+        System.out.println("Booking Request Queue\n");
 
-        // 1. Initialize domain objects (from UC2)
-        Room singleRoom = new SingleRoom();
-        Room doubleRoom = new DoubleRoom();
-        Room suiteRoom = new SuiteRoom();
+        // Initialize booking queue
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        // 2. Initialize centralized inventory (from UC3)
-        RoomInventory inventory = new RoomInventory();
+        // Create booking requests
+        Reservation r1 = new Reservation("Abhi", "Single");
+        Reservation r2 = new Reservation("Subha", "Double");
+        Reservation r3 = new Reservation("Vanmathi", "Suite");
 
-        // 3. Initialize the Search Service (UC4)
-        RoomSearchService searchService = new RoomSearchService();
+        // Add requests to the queue (Simulating arrival order)
+        bookingQueue.addRequest(r1);
+        bookingQueue.addRequest(r2);
+        bookingQueue.addRequest(r3);
 
-        // 4. Perform the read-only search operation
-        searchService.searchAvailableRooms(inventory, singleRoom, doubleRoom, suiteRoom);
+        // Display queued booking requests in FIFO order
+        while (bookingQueue.hasPendingRequests()) {
+            Reservation currentRequest = bookingQueue.getNextRequest();
+            System.out.println("Processing booking for Guest: " + currentRequest.getGuestName() +
+                    ", Room Type: " + currentRequest.getRoomType());
+        }
     }
 }
