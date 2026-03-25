@@ -1,7 +1,4 @@
-# BookMyStay
-Hotel Booking Management System (App-Based Learning Using Core Java &amp; Data Structures)
-
-# 02 UC 1 - Application Entry & Welcome Message
+# UC 2 - Basic Room Types & Static Availability
 
 **Author:** Sahil Prajapati  
 **Date:** 25 March 2026
@@ -9,38 +6,35 @@ Hotel Booking Management System (App-Based Learning Using Core Java &amp; Data S
 ---
 
 ## 🎯 Goal
-Establish a clear and predictable starting point for the Hotel Booking application by demonstrating how a Java program begins execution and produces console output.
+Introduce object modeling through inheritance and abstraction before introducing data structures, allowing students to focus on domain design rather than optimization.
 
 ## 👤 Actor
-**User** – runs the application from the command line or IDE.
+**User** – runs the application to view predefined room types and their availability.
 
 ## 🔄 Flow
 1. User runs the application.
-2. JVM invokes the `main()` method.
-3. Application prints a welcome message along with the application name and version.
-4. Application terminates.
+2. `Room` objects representing different room types are created.
+3. Availability for each room type is stored using simple variables.
+4. Room details and availability information are printed to the console.
+5. Application terminates.
 
 ---
 
 ## 🧠 Key Concepts Used
 
-* **Class:** Even the simplest Java application must be defined inside a class. The class acts as a container for application behavior and marks the logical boundary of the program.
-* **`main()` Method:** The main method is the entry point of every standalone Java application. The JVM looks specifically for the method signature: `public static void main(String[] args)`.
-* **`static` Keyword:** The `main()` method is declared static so that it can be executed without creating an object of the class. This allows the JVM to start execution directly.
-* **Console Output:** `System.out.println()` is used to send text output to the console. This is the simplest way to observe program behavior during early development.
-* **String Literals:** Text enclosed in double quotes (e.g., `"Hotel Booking System v1.0"`) is treated as a String literal, which is immutable and stored in the String pool.
-* **Method Invocation:** Calling `println()` on the `out` object demonstrates how methods are invoked on objects in Java, even in basic programs.
-* **Application Flow:** Execution proceeds top to bottom inside the `main()` method unless altered by control structures. This use case reinforces linear execution flow.
-* **JavaDoc Comments:** JavaDoc comments are used to document the class and its purpose. They serve as the foundation for professional code documentation.
-* **JavaDoc Annotations:** Tags such as `@author` and `@version` provide metadata about the class and help maintain traceability as the system evolves.
+* **Abstract Class:** An abstract class is used to represent a generalized concept that should not be instantiated directly. The `Room` class defines common attributes and behavior shared by all room types while enforcing a consistent structure.
+* **Inheritance:** Concrete room classes (`SingleRoom`, `DoubleRoom`, `SuiteRoom`) extend the abstract `Room` class. This allows shared properties to be reused while enabling specialization for each room type.
+* **Polymorphism:** Room objects are referenced using the `Room` type, enabling uniform handling of different room implementations. This prepares the system for future extensibility without changing client code.
+* **Encapsulation:** Room attributes such as number of beds, size, and price are encapsulated within the `Room` class. This ensures that room characteristics are controlled and modified only through defined behavior.
+* **Static Availability Representation:** Room availability is stored using simple variables rather than data structures. This intentionally highlights the limitations of hardcoded and scattered state management.
+* **Separation of Domain and State:** Room objects represent what a room is, while availability variables represent current system state. This distinction becomes critical when inventory management is introduced later.
 
 ---
 
 ## ✅ Key Requirements
 
-- [ ] Create a Java class that represents the application entry point.
-- [ ] Implement the `main()` method using the correct signature.
-- [ ] Print a welcome message to the console.
-- [ ] Display the application name and version information.
-- [ ] Use JavaDoc comments to document the class and its intent.
-- [ ] Ensure the program executes and terminates without errors.
+- [ ] Define an abstract `Room` class with common attributes.
+- [ ] Create concrete room classes for Single, Double, and Suite rooms.
+- [ ] Initialize room objects in the application entry point.
+- [ ] Store room availability using individual variables.
+- [ ] Display room details and availability to the console.
