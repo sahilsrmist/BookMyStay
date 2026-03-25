@@ -1,20 +1,20 @@
 import java.util.*;
 /**
  * ====================================================================
- * MAIN CLASS - UseCase7AddOnServiceSelection
+ * MAIN CLASS - UseCase8BookingHistoryReport
  * ====================================================================
  *
- * Use Case 7: Add-On Service Selection
+ * Use Case 8: Booking History & Reporting
  *
  * Description:
- * This class demonstrates how optional
- * services can be attached to a confirmed
- * booking.
+ * This class demonstrates how
+ * confirmed bookings are stored
+ * and reported.
  *
- * Services are added after room allocation
- * and do not affect inventory.
+ * The system maintains an ordered
+ * audit trail of reservations.
  *
- * @version 7.0
+ * @version 8.0
  */
 public class BookMyStay {
     /**
@@ -23,26 +23,23 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Add-On Service Selection\n");
+        System.out.println("Booking History and Reporting\n");
 
-        // 1. Initialize the Service Manager
-        AddOnServiceManager serviceManager = new AddOnServiceManager();
+        // Initialize history and reporting services
+        BookingHistory history = new BookingHistory();
+        BookingReportService reportService = new BookingReportService();
 
-        // 2. Define available Add-On Services
-        AddOnService breakfast = new AddOnService("Breakfast Buffet", 500.0);
-        AddOnService spa = new AddOnService("Spa Treatment", 1500.0);
-        AddOnService airportPickup = new AddOnService("Airport Pickup", 1000.0);
+        // Simulate confirmed bookings
+        Reservation r1 = new Reservation("Abhi", "Single");
+        Reservation r2 = new Reservation("Subha", "Double");
+        Reservation r3 = new Reservation("Vanmathi", "Suite");
 
-        // 3. Simulate a confirmed reservation ID (e.g., from UC6)
-        String reservationId = "Single-1"; // Assume this was assigned to "Abhi" in UC6
+        // Store bookings in history
+        history.addReservation(r1);
+        history.addReservation(r2);
+        history.addReservation(r3);
 
-        // 4. Attach services to the reservation
-        System.out.println("Attaching services to " + reservationId + ":");
-        serviceManager.addService(reservationId, breakfast);
-        serviceManager.addService(reservationId, airportPickup);
-
-        // 5. Calculate and display the total cost of add-ons
-        double totalAddOnCost = serviceManager.calculateTotalServiceCost(reservationId);
-        System.out.println("\nTotal Add-On Cost for " + reservationId + ": " + totalAddOnCost);
+        // Generate the report
+        reportService.generateReport(history);
     }
 }
