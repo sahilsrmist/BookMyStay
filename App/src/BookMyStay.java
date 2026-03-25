@@ -1,19 +1,23 @@
+import java.util.*;
+
+
 /**
  * ====================================================================
- * MAIN CLASS - UseCase2RoomInitialization
+ * MAIN CLASS - UseCase3InventorySetup
  * ====================================================================
  *
- * Use Case 2: Basic Room Types & Static Availability
+ * Use Case 3: Centralized Room Inventory Management
  *
  * Description:
- * This class demonstrates room initialization
- * using domain models before introducing
- * centralized inventory management.
+ * This class demonstrates how room availability
+ * is managed using a centralized inventory.
  *
- * Availability is represented using
- * simple variables to highlight limitations.
+ * Room objects are used to retrieve pricing
+ * and room characteristics.
  *
- * @version 2.1
+ * No booking or search logic is introduced here.
+ *
+ * @version 3.1
  */
 public class BookMyStay {
     /**
@@ -22,31 +26,30 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hotel Room Initialization\n");
+        System.out.println("Hotel Room Inventory Status\n");
 
-        // Initialize rooms using Polymorphism
+        // Initialize domain objects (from UC2)
         Room singleRoom = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
         Room suiteRoom = new SuiteRoom();
 
-        // Static availability representation
-        int availableSingleRooms = 5;
-        int availableDoubleRooms = 3;
-        int availableSuiteRooms = 2;
+        // Initialize centralized inventory (UC3)
+        RoomInventory inventory = new RoomInventory();
+        Map<String, Integer> availability = inventory.getRoomAvailability();
 
         // Display Single Room
         System.out.println("Single Room:");
         singleRoom.displayRoomDetails();
-        System.out.println("Available: " + availableSingleRooms + "\n");
+        System.out.println("Available Rooms: " + availability.get("Single") + "\n");
 
         // Display Double Room
         System.out.println("Double Room:");
         doubleRoom.displayRoomDetails();
-        System.out.println("Available: " + availableDoubleRooms + "\n");
+        System.out.println("Available Rooms: " + availability.get("Double") + "\n");
 
         // Display Suite Room
         System.out.println("Suite Room:");
         suiteRoom.displayRoomDetails();
-        System.out.println("Available: " + availableSuiteRooms);
+        System.out.println("Available Rooms: " + availability.get("Suite"));
     }
 }
