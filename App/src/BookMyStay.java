@@ -3,20 +3,19 @@ import java.util.Map;
 
 /**
  * ====================================================================
- * MAIN CLASS - UseCase11ConcurrentBookingSimulation
+ * MAIN CLASS - UseCase12DataPersistenceRecovery
  * ====================================================================
  *
- * Use Case 11: Concurrent Booking Simulation
+ * Use Case 12: Data Persistence & System Recovery
  *
  * Description:
- * This class simulates multiple users
- * attempting to book rooms at the same time.
+ * This class demonstrates how system state
+ * can be restored after an application restart.
  *
- * It highlights race conditions and
- * demonstrates how synchronization
- * prevents inconsistent allocations.
+ * Inventory data is loaded from a file
+ * before any booking operations occur.
  *
- * @version 11.0
+ * @version 12.0
  */
 public class BookMyStay {
     /**
@@ -25,49 +24,30 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Concurrent Booking Simulation");
+        System.out.println("System Recovery");
 
-        // Initialize shared resources
+        String filePath = "inventory_state.txt";
+
+        // Initialize Inventory (Defaults to 5, 3, 2 internally based on UC3)
         RoomInventory inventory = new RoomInventory();
-        RoomAllocationService allocationService = new RoomAllocationService();
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        FilePersistenceService persistenceService = new FilePersistenceService();
 
-        // Populate queue with concurrent requests
-        bookingQueue.addRequest(new Reservation("Abhi", "Single"));
-        bookingQueue.addRequest(new Reservation("Vanmathi", "Double"));
-        bookingQueue.addRequest(new Reservation("Kural", "Suite"));
-        bookingQueue.addRequest(new Reservation("Subha", "Single"));
+        // 1. Attempt to load previous state from the file
+        persistenceService.loadInventory(inventory, filePath);
 
-        // Create booking processor tasks (passing the exact same shared objects)
-        Thread t1 = new Thread(
-                new ConcurrentBookingProcessor(
-                        bookingQueue, inventory, allocationService
-                )
-        );
-
-        Thread t2 = new Thread(
-                new ConcurrentBookingProcessor(
-                        bookingQueue, inventory, allocationService
-                )
-        );
-
-        // Start concurrent processing
-        t1.start();
-        t2.start();
-
-        // Wait for both threads to finish before printing the final inventory
-        try {
-            t1.join();
-            t2.join();
-        } catch (InterruptedException e) {
-            System.out.println("Thread execution interrupted.");
-        }
-
-        // Display remaining inventory after concurrent allocation
+        // 2. Display the current state (either fresh or restored)
         Map<String, Integer> currentAvailability = inventory.getRoomAvailability();
-        System.out.println("\nRemaining Inventory:");
+        System.out.println("Current Inventory:");
         System.out.println("Single: " + currentAvailability.get("Single"));
         System.out.println("Double: " + currentAvailability.get("Double"));
         System.out.println("Suite: " + currentAvailability.get("Suite"));
+
+        // Simulate some app activity here... (e.g., booking a room)
+        // inventory.updateAvailability("Single", 4);
+
+        // 3. Save the state back to the file before application termination
+        System.out.println("\nSaving system state...");
+        persistenceService.saveInventory(inventory, filePath);
+        System.out.println("Inventory saved successfully.");
     }
 }
