@@ -3,19 +3,20 @@ import java.util.Map;
 
 /**
  * ====================================================================
- * MAIN CLASS - UseCase10BookingCancellation
+ * MAIN CLASS - UseCase11ConcurrentBookingSimulation
  * ====================================================================
  *
- * Use Case 10: Booking Cancellation & Inventory Rollback
+ * Use Case 11: Concurrent Booking Simulation
  *
  * Description:
- * This class demonstrates how confirmed
- * bookings can be cancelled safely.
+ * This class simulates multiple users
+ * attempting to book rooms at the same time.
  *
- * Inventory is restored and rollback
- * history is maintained.
+ * It highlights race conditions and
+ * demonstrates how synchronization
+ * prevents inconsistent allocations.
  *
- * @version 10.0
+ * @version 11.0
  */
 public class BookMyStay {
     /**
@@ -24,31 +25,49 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Booking Cancellation");
+        System.out.println("Concurrent Booking Simulation");
 
-        // 1. Initialize core system state
+        // Initialize shared resources
         RoomInventory inventory = new RoomInventory();
-        CancellationService cancellationService = new CancellationService();
+        RoomAllocationService allocationService = new RoomAllocationService();
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        // 2. Simulate a confirmed booking (Normally done by RoomAllocationService in UC6)
-        // Assume Abhi booked a Single room. Inventory goes from 5 to 4.
-        inventory.updateAvailability("Single", 4);
-        String confirmedRoomId = "Single-1";
+        // Populate queue with concurrent requests
+        bookingQueue.addRequest(new Reservation("Abhi", "Single"));
+        bookingQueue.addRequest(new Reservation("Vanmathi", "Double"));
+        bookingQueue.addRequest(new Reservation("Kural", "Suite"));
+        bookingQueue.addRequest(new Reservation("Subha", "Single"));
 
-        // Register the booking with the cancellation service so it "knows" about it
-        cancellationService.registerBooking(confirmedRoomId, "Single");
+        // Create booking processor tasks (passing the exact same shared objects)
+        Thread t1 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue, inventory, allocationService
+                )
+        );
 
-        // 3. Perform the Cancellation (The Guest requests to cancel "Single-1")
-        cancellationService.cancelBooking(confirmedRoomId, inventory);
+        Thread t2 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue, inventory, allocationService
+                )
+        );
 
-        // 4. View the Stack (LIFO Rollback visualization)
-        cancellationService.showRollbackHistory();
+        // Start concurrent processing
+        t1.start();
+        t2.start();
 
-        // 5. Prove that the inventory was correctly rolled back (Should be back to 5)
+        // Wait for both threads to finish before printing the final inventory
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            System.out.println("Thread execution interrupted.");
+        }
+
+        // Display remaining inventory after concurrent allocation
         Map<String, Integer> currentAvailability = inventory.getRoomAvailability();
-        // NOTE: The screenshot shows "Updated Single Room Availability: 6",
-        // which implies the starting inventory was 5, then incremented to 6.
-        // I will output the current map value to match logic.
-        System.out.println("\nUpdated Single Room Availability: " + currentAvailability.get("Single"));
+        System.out.println("\nRemaining Inventory:");
+        System.out.println("Single: " + currentAvailability.get("Single"));
+        System.out.println("Double: " + currentAvailability.get("Double"));
+        System.out.println("Suite: " + currentAvailability.get("Suite"));
     }
 }
