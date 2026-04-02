@@ -1,23 +1,21 @@
 import java.util.*;
-import java.util.Scanner;
+import java.util.Map;
 
 /**
  * ====================================================================
- * MAIN CLASS - UseCase9ErrorHandlingValidation
+ * MAIN CLASS - UseCase10BookingCancellation
  * ====================================================================
  *
- * Use Case 9: Error Handling & Validation
+ * Use Case 10: Booking Cancellation & Inventory Rollback
  *
  * Description:
- * This class demonstrates how user input
- * is validated before booking is processed.
+ * This class demonstrates how confirmed
+ * bookings can be cancelled safely.
  *
- * The system:
- * - Accepts user input
- * - Validates input centrally
- * - Handles errors gracefully
+ * Inventory is restored and rollback
+ * history is maintained.
  *
- * @version 9.0
+ * @version 10.0
  */
 public class BookMyStay {
     /**
@@ -26,41 +24,31 @@ public class BookMyStay {
      * @param args Command-line arguments
      */
     public static void main(String[] args) {
+        System.out.println("Booking Cancellation");
 
-        // Display application header
-        System.out.println("Booking Validation\n");
-
-        Scanner scanner = new Scanner(System.in);
-
-        // Initialize required components
+        // 1. Initialize core system state
         RoomInventory inventory = new RoomInventory();
-        ReservationValidator validator = new ReservationValidator();
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        CancellationService cancellationService = new CancellationService();
 
-        try {
-            // Accept user input
-            System.out.print("Enter guest name: ");
-            String guestName = scanner.nextLine();
+        // 2. Simulate a confirmed booking (Normally done by RoomAllocationService in UC6)
+        // Assume Abhi booked a Single room. Inventory goes from 5 to 4.
+        inventory.updateAvailability("Single", 4);
+        String confirmedRoomId = "Single-1";
 
-            System.out.print("Enter room type (Single/Double/Suite): ");
-            String roomType = scanner.nextLine();
+        // Register the booking with the cancellation service so it "knows" about it
+        cancellationService.registerBooking(confirmedRoomId, "Single");
 
-            // Validate the input using fail-fast design
-            validator.validate(guestName, roomType, inventory);
+        // 3. Perform the Cancellation (The Guest requests to cancel "Single-1")
+        cancellationService.cancelBooking(confirmedRoomId, inventory);
 
-            // If validation passes, create request and queue it
-            Reservation request = new Reservation(guestName, roomType);
-            bookingQueue.addRequest(request);
+        // 4. View the Stack (LIFO Rollback visualization)
+        cancellationService.showRollbackHistory();
 
-            System.out.println("Booking requested successfully.");
-
-        } catch (InvalidBookingException e) {
-            // Handle domain-specific validation errors gracefully
-            System.out.println("Booking failed: " + e.getMessage());
-
-        } finally {
-            // Always clean up resources
-            scanner.close();
-        }
+        // 5. Prove that the inventory was correctly rolled back (Should be back to 5)
+        Map<String, Integer> currentAvailability = inventory.getRoomAvailability();
+        // NOTE: The screenshot shows "Updated Single Room Availability: 6",
+        // which implies the starting inventory was 5, then incremented to 6.
+        // I will output the current map value to match logic.
+        System.out.println("\nUpdated Single Room Availability: " + currentAvailability.get("Single"));
     }
 }
